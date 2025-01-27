@@ -3,21 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Usercontroller;
 
+Route::controller(Usercontroller::class)->group(function () {
+    // read operation route
+    Route::get("/", "read")->name("read");
 
+    // create operation route view and post
+    Route::view("/add", "add")->name("add");
+    Route::post("/add_form", "addForm");
 
+    // update route for getting single user data and put methods
+    Route::get("/update/{id}", "singleUser")->name("updateGet");
+    Route::put("/updateform/{id}","updateForm");
 
-
-Route::controller(Usercontroller::class)->group(function(){
-    // read page route
-    Route::get("/","read")->name("read");
-
-    // add page get and post route
-    Route::view("/add","add")->name("add");
-
-    // update page get and put route
-    Route::view("/update/{userID}","update")->name("update");
-
-    // delete page get and delete route
-    Route::get("/delete/{userID}","delete")->name("delete");
-
-});
+    // route for delete
+    Route::delete("/delete/{id}", "delete")->name("delete");
+ });
