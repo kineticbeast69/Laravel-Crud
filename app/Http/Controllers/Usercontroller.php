@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User_detail;
 class Usercontroller extends Controller
 {
 
@@ -12,12 +13,9 @@ class Usercontroller extends Controller
     public function read(){
         $table = DB::table("user_details");
         $data = $table->select("username","email","id")->paginate(8);//fecthing all the data from database in pagination fomr
-        if(count($data)==0){//checking the data length equals zero
-            $noData = ["No user records."];
-            return view("read", ["datas" => $noData]);
-        }else{
+
             return view("read",["datas"=>$data]);
-        }
+        
     } 
 
 
@@ -36,20 +34,25 @@ class Usercontroller extends Controller
         // checking the user exists or not
         $check_user = $table->where(["username" => $request->username, "email" => $request->email])->exists();//query for checking the user
         if($check_user){
-            return back()->with("danger","User already exists.");
+            $request->session()->flash("userExists","User already exists.");//add page notification;
+            return back();
         }
 
         // adding the user info in database
-        $addUser = $table->insert([//query for adding the user
-            "username"=>$request->username,
-            "email"=>$request->email,
-            "password"=>$hash_password,
+        $addUser = $table->insert([
+            "username" => $request->username,
+            "email" => $request->email,
+            "password" => $hash_password,
+            "created_at"=>now(),
+            "updated_at"=>now(),
         ]);
 
         if($addUser){
-            return redirect()->route("read")->with("success","User added Succesfully.");
+            $request->session()->flash("userAdded","User added succesfully.");//read page notification
+            return redirect()->route("read");
         }else{
-            return back()->with("info", "Can't add the user.");
+            $request->session()->flash("techInfo","Can't add the user.Try Again.");//add page notification
+            return back();
         }
     } 
 
@@ -82,25 +85,29 @@ class Usercontroller extends Controller
         ]);//update query
 
         if($updateUser){
-            return redirect()->route("read")->with("success", "User updated succesfully.");
+            $request->session()->flash("success","User updated successfully.");//read page notification
+            return redirect()->route("read");
         }else{
-            return back()->with("warning", "Cant updated the user info");
+            $request->session()->flash("updatefail","Cant updated the user info");//update page notification
+            return back();
         }
     }
 
 
 
     // deleting the user data
-    public function delete($id){
+    public function delete(Request $request ,$id){
         $table = DB::table("user_details");
 
         // deleting the user
         $delete_user = $table->where("id", $id)->delete();//query for deleting the user
 
         if($delete_user){
-            return redirect()->route("read")->with("success", "User deleted succesfully");
+            $request->session()->flash("danger","User deleted succesfully.");//read page delete notification
+            return redirect()->route("read");
         }else{
-            return back()->with("warning", "Can't deleted the user.");
+            $request->session()->flash("deleteError","Can't deleted the user.");//read page delete notification
+            return back();
         }
 
     }

@@ -13,16 +13,18 @@
 </div>
 
 <!-- alert are here -->
-
-<!-- for danger message -->
-@if (session("danger"))
-<x-alert type="danger" message="{{session("danger")}}"/>
+<!-- For user exists message -->
+<center>
+@if (session('userExists'))
+    <x-alert type="danger" message="{{ session('userExists') }}" />
 @endif
 
-<!-- for info message -->
-@if (session("info"))
-<x-alert type="info" message="{{session("info")}}"/>
+<!-- For info message -->
+@if (session('techInfo'))
+    <x-alert type="info" message="{{ session('techInfo') }}" />
 @endif
+</center>
+
 
 
 <div class="w-100 mt-5 d-flex justify-content-center align-items-center ">

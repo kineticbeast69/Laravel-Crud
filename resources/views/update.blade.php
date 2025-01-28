@@ -9,6 +9,13 @@
     </a>
 </div>
 
+<center>
+@if (session('updatefail'))
+    <x-alert type="info" message="{{ session('updatefail') }}" />
+@endif
+</center>
+
+
 <div class="w-100 mt-5 d-flex justify-content-center align-items-center ">
 <form method="post" action="/updateform/{{$data->id}}" class="w-25 border border-secondary rounded-3 p-3 shadow-lg">
      @csrf
